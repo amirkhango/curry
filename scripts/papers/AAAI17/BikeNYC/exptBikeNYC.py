@@ -83,7 +83,7 @@ def main():
     print('=' * 10)
     print("compiling model...")
     print(
-        "**at the first time, it takes a few minites to compile if you uses [Theano] as the backend**")
+        "**at the first time, it takes a few minites to compile if you use [Theano] as the backend**")
     model = build_model(external_dim)
     hyperparams_name = 'c{}.p{}.t{}.resunit{}.lr{}'.format(
         len_closeness, len_period, len_trend, nb_residual_unit, lr)
