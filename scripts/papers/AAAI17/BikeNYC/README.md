@@ -1,4 +1,10 @@
-It will soon contain the code for our AAAI 2017 paper:
-```
-Junbo Zhang, Yu Zheng, Dekang Qi. Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction. In AAAI 2017. 
-```
+1. Install [**DeepST**](https://github.com/lucktroy/DeepST)
+
+2. Download [**BikeNYC**](https://github.com/lucktroy/DeepST/tree/master/data/BikeNYC) data
+
+3. Reproduce the result of ST-ResNet 
+
+    ```
+    THEANO_FLAGS="device=gpu,floatX=float32" python exptBikeNYC.py
+    ```
+

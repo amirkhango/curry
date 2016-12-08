@@ -5,7 +5,7 @@ TaxiBJ: InFlow/OutFlow, Meteorology and Holidays at Beijing
 
 `Junbo Zhang, Yu Zheng, Dekang Qi. Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction. In AAAI 2017. `
 
-Download data from [OneDrive](https://1drv.ms/f/s!Akh6N7xv3uVmhOhDKwx3bm5zpHkDOQ) or [BaiduPan](http://pan.baidu.com/s/1qYq7ja8)
+Download data from [OneDrive](https://1drv.ms/f/s!Akh6N7xv3uVmhOhDKwx3bm5zpHkDOQ) or [BaiduYun](http://pan.baidu.com/s/1qYq7ja8)
 
 Please check the data with `md5sum` command: 
 ```
@@ -23,6 +23,15 @@ md5sum -c md5sum.txt
 
 where the first four files are *crowd flows* in Beijing from the year 2013 to 2016, `BJ_Meteorology.h5` is the Meteorological data, `BJ_Holiday.txt` includes the holidays (and adjacent weekends) of Beijing. 
 
+Note: `*.h5` is `hdf5` file, one can use the follow code to view the data:
+
+```
+import h5py
+f = h5py.File('BJ16_M32x32_T30_InOut.h5')
+for ke in f.keys():
+    print(ke, f[ke].shape)
+```
+
 ## Flows of Crowds
 
 File names: `BJ[YEAR]_M32x32_T30_InOut.h5`, where
@@ -34,7 +43,7 @@ File names: `BJ[YEAR]_M32x32_T30_InOut.h5`, where
 
 [1] Junbo Zhang, Yu Zheng, Dekang Qi. Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction. In AAAI 2017. 
 
-Each `h5` file has two following subsets:
+Each `*.h5` file has two following subsets:
 
 * `date`: a list of timeslots, which is associated the **data**. 
 * `data`: a 4D tensor of shape (number_of_timeslots, 2, 32, 32), of which `data[i]` is a 3D tensor of shape (2, 32, 32) at the timeslot `date[i]`, `data[i][0]` is a `32x32` inflow matrix and `data[i][1]` is a `32x32` outflow matrix. 

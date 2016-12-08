@@ -1,4 +1,4 @@
-1. Install [**DeepST**](https://github.com/lucktroy/DeepST). 
+1. Install [**DeepST**](https://github.com/lucktroy/DeepST)
 
 2. Download [**TaxiBJ**](https://github.com/lucktroy/DeepST/tree/master/data/TaxiBJ) data
 
