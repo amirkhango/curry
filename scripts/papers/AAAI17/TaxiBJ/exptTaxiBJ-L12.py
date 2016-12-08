@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ 
-    THEANO_FLAGS="device=gpu0" python L12.py
+    THEANO_FLAGS="device=gpu0" python exptTaxiBJ-L12.py
 """
 from __future__ import print_function
 import os

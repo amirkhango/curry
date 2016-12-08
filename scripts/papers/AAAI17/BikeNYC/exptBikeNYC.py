@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ 
 Usage:
-    THEANO_FLAGS="device=gpu0" python exptTaxiBJ.py [number_of_residual_units]
+    THEANO_FLAGS="device=gpu0" python exptBikeNYC.py
 """
 from __future__ import print_function
 import os
