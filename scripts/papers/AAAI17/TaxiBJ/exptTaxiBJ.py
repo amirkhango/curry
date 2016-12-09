@@ -172,11 +172,11 @@ def main():
     model.load_weights(fname_param)
     score = model.evaluate(X_train, Y_train, batch_size=Y_train.shape[
                            0] // 48, verbose=0)
-    print('Train score: %.6f Train rmse: %.6f RMSE: %.6f' %
+    print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2.))
     score = model.evaluate(
         X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
-    print('Test score: %.6f Test rmse: %.6f RMSE: %.6f' %
+    print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2.))
     print("\nelapsed time (eval): %.3f seconds\n" % (time.time() - ts))
 
@@ -199,12 +199,12 @@ def main():
     print('evaluating using the final model')
     score = model.evaluate(X_train, Y_train, batch_size=Y_train.shape[
                            0] // 48, verbose=0)
-    print('Train score: %.6f Train rmse: %.6f RMSE: %.6f' %
+    print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2.))
     ts = time.time()
     score = model.evaluate(
         X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
-    print('Test score: %.6f Test rmse: %.6f RMSE: %.6f' %
+    print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2.))
     print("\nelapsed time (eval cont): %.3f seconds\n" % (time.time() - ts))
 
