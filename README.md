@@ -8,7 +8,7 @@ DeepST
 
 DeepST uses the following dependencies: 
 
-* [Keras](https://keras.io/#installation) and its dependencies are required to use DeepST. 
+* [Keras](https://keras.io/#installation) and its dependencies are required to use DeepST. Please read [Keras Configuration](keras_configuration.md) for the configuration setting. 
 * [Theano](http://deeplearning.net/software/theano/install.html#install) or [TensorFlow](https://github.com/tensorflow/tensorflow#download-and-setup), but **Theano** is recommended. 
 * numpy and scipy
 * HDF5 and [h5py](http://www.h5py.org/)
