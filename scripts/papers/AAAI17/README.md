@@ -9,6 +9,8 @@ The files in this directory recreate some of the experiments reported in the pap
 
 2. Reproduce **BikeNYC** results: [ReadMe](BikeNYC/)
 
+Before running the code, Please read [Keras Configuration](https://github.com/lucktroy/DeepST/blob/master/keras_configuration.md) for the configuration setting. 
+
 **If you use the code provided here, please cite our paper:**
 ```
 @inproceedings{zhang2017deep,
