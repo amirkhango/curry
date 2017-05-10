@@ -11,7 +11,7 @@ The files in this directory recreate some of the experiments reported in the pap
 
 Before running the code, Please read [Keras Configuration](https://github.com/lucktroy/DeepST/blob/master/keras_configuration.md) for the configuration setting. 
 
-**If you use the code provided here, please cite our paper:**
+**If you use the code or data provided, please cite our paper:**
 ```
 @inproceedings{zhang2017deep,
   title={Deep Spatio-Temporal Residual Networks for Citywide Crowd Flows Prediction},
