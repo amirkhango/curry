@@ -5,10 +5,9 @@ Usage:
 """
 from __future__ import print_function
 import os
-import cPickle as pickle
+import pickle
 import numpy as np
 import math
-
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from deepst.models.STResNet import stresnet
@@ -84,6 +83,7 @@ def main():
     print("compiling model...")
     print(
         "**at the first time, it takes a few minites to compile if you use [Theano] as the backend**")
+    print('external_dim is:', external_dim)
     model = build_model(external_dim)
     hyperparams_name = 'c{}.p{}.t{}.resunit{}.lr{}'.format(
         len_closeness, len_period, len_trend, nb_residual_unit, lr)

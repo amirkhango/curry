@@ -6,18 +6,18 @@ from __future__ import print_function
 from keras.layers import (
     Input,
     Activation,
-    merge,
     Dense,
-    Reshape
+    Reshape,
+    Add
 )
-from keras.layers.convolutional import Convolution2D
+from keras.layers.convolutional import Conv2D
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 #from keras.utils.visualize_util import plot
-
+import numpy as np
 
 def _shortcut(input, residual):
-    return merge([input, residual], mode='sum')
+    return Add()([input, residual])
 
 
 def _bn_relu_conv(nb_filter, nb_row, nb_col, subsample=(1, 1), bn=False):
@@ -25,7 +25,7 @@ def _bn_relu_conv(nb_filter, nb_row, nb_col, subsample=(1, 1), bn=False):
         if bn:
             input = BatchNormalization(mode=0, axis=1)(input)
         activation = Activation('relu')(input)
-        return Convolution2D(nb_filter=nb_filter, nb_row=nb_row, nb_col=nb_col, subsample=subsample, border_mode="same")(activation)
+        return Conv2D(filters=nb_filter, kernel_size=(3,3), strides=subsample, padding="same")(activation)
     return f
 
 
@@ -65,17 +65,17 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
             input = Input(shape=(nb_flow * len_seq, map_height, map_width))
             main_inputs.append(input)
             # Conv1
-            conv1 = Convolution2D(
-                nb_filter=64, nb_row=3, nb_col=3, border_mode="same")(input)
+            conv1 = Conv2D(
+                filters=64, kernel_size=(3,3), padding="same")(input)
             # [nb_residual_unit] Residual Units
             residual_output = ResUnits(_residual_unit, nb_filter=64,
                               repetations=nb_residual_unit)(conv1)
             # Conv2
             activation = Activation('relu')(residual_output)
-            conv2 = Convolution2D(
-                nb_filter=nb_flow, nb_row=3, nb_col=3, border_mode="same")(activation)
+            conv2 = Conv2D(
+                filters=nb_flow, kernel_size=(3,3), padding="same")(activation)
             outputs.append(conv2)
-
+    print('outputs length:',len(outputs))
     # parameter-matrix-based fusion
     if len(outputs) == 1:
         main_output = outputs[0]
@@ -84,7 +84,8 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
         new_outputs = []
         for output in outputs:
             new_outputs.append(iLayer()(output))
-        main_output = merge(new_outputs, mode='sum')
+        #print('new_outputs shape is:',np.asarray(new_outputs).shape)
+        main_output = Add()(new_outputs)
 
     # fusing with external component
     if external_dim != None and external_dim > 0:
@@ -96,7 +97,7 @@ def stresnet(c_conf=(3, 2, 32, 32), p_conf=(3, 2, 32, 32), t_conf=(3, 2, 32, 32)
         h1 = Dense(output_dim=nb_flow * map_height * map_width)(embedding)
         activation = Activation('relu')(h1)
         external_output = Reshape((nb_flow, map_height, map_width))(activation)
-        main_output = merge([main_output, external_output], mode='sum')
+        main_output = Add()([main_output, external_output])
     else:
         print('external_dim:', external_dim)
 

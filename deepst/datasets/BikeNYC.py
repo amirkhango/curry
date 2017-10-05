@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import os
-import cPickle as pickle
+import pickle as pickle
 import numpy as np
 
 from . import load_stdata
@@ -20,7 +20,7 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
     assert(len_closeness + len_period + len_trend > 0)
     # load data
     data, timestamps = load_stdata(os.path.join(DATAPATH, 'BikeNYC', 'NYC14_M16x8_T60_NewEnd.h5'))
-    # print(timestamps)
+    # print(timestamps)da
     # remove a certain day which does not have 48 timestamps
     data, timestamps = remove_incomplete_days(data, timestamps, T)
     data = data[:, :nb_flow]
@@ -75,6 +75,7 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
     # load meta feature
     if meta_data:
         meta_feature = timestamp2vec(timestamps_Y)
+        print('meta_feature shape is:',meta_feature.shape)
         metadata_dim = meta_feature.shape[1]
         meta_feature_train, meta_feature_test = meta_feature[:-len_test], meta_feature[-len_test:]
         X_train.append(meta_feature_train)
