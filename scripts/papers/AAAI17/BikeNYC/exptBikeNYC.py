@@ -127,7 +127,7 @@ def main():
     model_checkpoint = ModelCheckpoint(
         fname_param, monitor='rmse', verbose=0, save_best_only=True, mode='min')
     history = model.fit(X_train_ALL, Y_train, nb_epoch=nb_epoch_cont, verbose=1, batch_size=batch_size, callbacks=[
-                        model_checkpoint], validation_data=(X_test, Y_test))
+                        model_checkpoint], validation_data=(X_test_ALL, Y_test))
     pickle.dump((history.history), open(os.path.join(
         path_result, '{}.cont.history.pkl'.format(hyperparams_name)), 'wb'))
     model.save_weights(os.path.join(
