@@ -68,9 +68,17 @@ class STMatrix(object):
                    [TrendInterval * self.T * j for j in range(1, len_trend+1)]]
 
         i = max(self.T * TrendInterval * len_trend, self.T * PeriodInterval * len_period, len_closeness)
+        print('TrendInterval is {}, len_trend is {}, \
+            PeriodInterval is {}, len_period is {},\
+            ,len_closeness is {}, self.T is{}'.format(TrendInterval,len_trend,PeriodInterval,len_period, \
+                len_closeness, self.T))
+        print('max i is:', i)
+
+        assert i < len(self.pd_timestamps), "The parameters of len_trend is too long so that there is no data for using."
+
         while i < len(self.pd_timestamps):
             Flag = True
-            for depend in depends:
+            for depend in depends: #Here, in Bruce's idea, there is no need to do loop, only checking the trend denpend (i.e., depends[2]) is OK.
                 if Flag is False:
                     break
                 Flag = self.check_it([self.pd_timestamps[i] - j * offset_frame for j in depend])
@@ -78,6 +86,7 @@ class STMatrix(object):
             if Flag is False:
                 i += 1
                 continue
+
             x_c = [self.get_matrix(self.pd_timestamps[i] - j * offset_frame) for j in depends[0]]
             x_p = [self.get_matrix(self.pd_timestamps[i] - j * offset_frame) for j in depends[1]]
             x_t = [self.get_matrix(self.pd_timestamps[i] - j * offset_frame) for j in depends[2]]
@@ -91,11 +100,13 @@ class STMatrix(object):
             Y.append(y)
             timestamps_Y.append(self.timestamps[i])
             i += 1
+
         XC = np.asarray(XC)
         XP = np.asarray(XP)
         XT = np.asarray(XT)
+
         Y = np.asarray(Y)
-        print("XC shape: ", XC.shape, "XP shape: ", XP.shape, "XT shape: ", XT.shape, "Y shape:", Y.shape)
+        #print("XC shape: ", XC.shape, "XP shape: ", XP.shape, "XT shape: ", XT.shape, "Y shape:", Y.shape)
         return XC, XP, XT, Y, timestamps_Y
 
 

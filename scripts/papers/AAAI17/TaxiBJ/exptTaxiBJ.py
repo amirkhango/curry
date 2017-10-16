@@ -45,8 +45,8 @@ nb_flow = 2  # there are two types of flows: inflow and outflow
 days_test = 7 * 4
 len_test = T * days_test
 map_height, map_width = 32, 32  # grid size
-path_result = 'RET'
-path_model = 'MODEL'
+path_result = 'BJ_RET'
+path_model = 'BJ_MODEL'
 
 
 if os.path.isdir(path_result) is False:
