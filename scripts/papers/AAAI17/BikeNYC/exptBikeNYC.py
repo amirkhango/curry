@@ -95,6 +95,10 @@ def main():
 
     print('=' * 10)
     print("training model...")
+
+    print('X_train_ALL shape is:', X_train_ALL.shape)
+    print('X_test_ALL shape is:', X_test_ALL.shape)
+    
     history = model.fit(X_train_ALL, Y_train,
                         nb_epoch=nb_epoch,
                         batch_size=batch_size,

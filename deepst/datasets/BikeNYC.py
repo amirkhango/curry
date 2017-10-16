@@ -74,10 +74,10 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
 
     X_ALL = np.concatenate((XC,XP,XT), axis=1)
     print('X_ALL shape is:', X_ALL.shape)
-    X_train_ALL = X_ALL[:-len_test]
-    X_test_ALL = X_ALL[-len_test:]
-    print('X_train_ALL shape is:', X_train_ALL.shape)
-    print('X_test_ALL shape is:', X_test_ALL.shape)
+    #X_train_ALL = X_ALL[:-len_test]
+    #X_test_ALL = X_ALL[-len_test:]
+    #print('X_train_ALL shape is:', X_train_ALL.shape)
+    #print('X_test_ALL shape is:', X_test_ALL.shape)
 
     Y = np.vstack(Y)
     print('len_test is',len_test)
@@ -88,6 +88,12 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
     timestamp_train, timestamp_test = timestamps_Y[:-len_test], timestamps_Y[-len_test:]
     X_train = []
     X_test = []
+
+    X_train_ALL =[]
+    X_test_ALL = []
+    X_train_ALL.append(X_ALL[:-len_test])
+    X_test_ALL.append(X_ALL[-len_test:])
+
     for l, X_ in zip([len_closeness, len_period, len_trend], [XC_train, XP_train, XT_train]):
         print('l is',l)
         if l > 0:
@@ -104,6 +110,9 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
         meta_feature_train, meta_feature_test = meta_feature[:-len_test], meta_feature[-len_test:]
         X_train.append(meta_feature_train)
         X_test.append(meta_feature_test)
+        X_train_ALL.append(meta_feature_train)
+        X_test_ALL.append(meta_feature_test)
+
     else:
         metadata_dim = None
     for _X in X_train:
