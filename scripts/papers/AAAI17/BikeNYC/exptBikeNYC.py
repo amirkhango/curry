@@ -27,8 +27,8 @@ T = 24  # number of time intervals in one day
 
 lr = 0.0002  # learning rate
 len_closeness = 3  # length of closeness dependent sequence
-len_period = 4  # length of peroid dependent sequence
-len_trend = 4  # length of trend dependent sequence
+len_period = 0  # length of peroid dependent sequence
+len_trend = 2  # length of trend dependent sequence
 nb_residual_unit = 4   # number of residual units
 
 nb_flow = 2  # there are two types of flows: new-flow and end-flow
