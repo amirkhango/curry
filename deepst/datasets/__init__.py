@@ -2,11 +2,18 @@ from __future__ import print_function
 import h5py
 import time
 
-def load_stdata(fname):
+print('test!')
+
+def load_stdata(fname, data_numbers=None):
     f = h5py.File(fname, 'r')
-    data = f['data'].value
-    timestamps = f['date'].value
-    f.close()
+    if data_numbers is None:     
+        data= f['data'].value
+        timestamps = f['date'].value   
+    else:
+        data = f['data'][:data_numbers]
+        timestamps = f['date'][:data_numbers]
+    
+    f.close()    
     return data, timestamps
 
 

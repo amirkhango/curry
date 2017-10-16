@@ -42,6 +42,9 @@ def string2timestamp(strings, T=48):
         year, month, day, slot = int(t[:4]), int(t[4:6]), int(t[6:8]), int(t[8:])-1
         timestamps.append(pd.Timestamp(datetime(year, month, day, hour=int(slot * time_per_slot), minute=(slot % num_per_T) * int(60.0 * time_per_slot))))
 
+    print('The last time stamp is',year, month, day, slot)
+    print('Pandas Timestamp is', timestamps[-1:])
+    
     return timestamps
 
 

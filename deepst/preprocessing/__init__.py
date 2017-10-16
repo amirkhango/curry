@@ -25,7 +25,7 @@ def timestamp2vec(timestamps):
 
 
 def remove_incomplete_days(data, timestamps, T=48):
-    # remove a certain day which has not 48 timestamps
+    # remove a certain day which has not 24 (for TaxiBJ data is 48) timestamps
     days = []  # available days: some day only contain some seqs
     days_incomplete = []
     i = 0

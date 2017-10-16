@@ -1,12 +1,38 @@
 from __future__ import print_function
 from keras.models import Sequential
-from keras.layers.core import Dense
-from keras.layers.core import Reshape, Merge
-from keras.layers.core import Activation
+from keras.layers import (
+    Activation,
+    Dense,
+    Reshape,
+    Add
+)
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import ZeroPadding3D
 from keras.layers.convolutional import Convolution2D, Convolution3D
+
+def binCNN(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 32)):
+    n_flow =c_conf[1]
+    map_width = c_conf[2]
+    map_height = c_conf[3]
+
+    print('input shape is:',n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height)
+
+    model = Sequential()
+    model.add(Convolution2D(filters=64, kernel_size=(3,3), input_shape=(n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=128, kernel_size=(3,3), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=64, kernel_size=(3,3), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=n_flow, kernel_size=(3,3), padding='same'))
+    model.add(Activation('tanh'))
+
+    return model
+
 
 
 def seqCNN(n_flow=4, seq_len=3, map_height=32, map_width=32):

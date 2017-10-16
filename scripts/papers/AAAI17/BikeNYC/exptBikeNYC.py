@@ -73,7 +73,7 @@ def build_model(external_dim):
 def main():
     # load data
     print("loading data...")
-    X_train, Y_train, X_test, Y_test, mmn, external_dim, timestamp_train, timestamp_test = BikeNYC.load_data(
+    X_train_ALL, X_test_ALL, X_train, Y_train, X_test, Y_test, mmn, external_dim, timestamp_train, timestamp_test = BikeNYC.load_data(
         T=T, nb_flow=nb_flow, len_closeness=len_closeness, len_period=len_period, len_trend=len_trend, len_test=len_test,
         preprocess_name='preprocessing.pkl', meta_data=True)
 
@@ -85,7 +85,7 @@ def main():
         "**at the first time, it takes a few minites to compile if you use [Theano] as the backend**")
     print('external_dim is:', external_dim)
     model = build_model(external_dim)
-    hyperparams_name = 'c{}.p{}.t{}.resunit{}.lr{}'.format(
+    hyperparams_name = 'binCNN_c{}.p{}.t{}.resunit{}.lr{}'.format(
         len_closeness, len_period, len_trend, nb_residual_unit, lr)
     fname_param = os.path.join('MODEL', '{}.best.h5'.format(hyperparams_name))
 
@@ -95,7 +95,7 @@ def main():
 
     print('=' * 10)
     print("training model...")
-    history = model.fit(X_train, Y_train,
+    history = model.fit(X_train_ALL, Y_train,
                         nb_epoch=nb_epoch,
                         batch_size=batch_size,
                         validation_split=0.1,
@@ -110,13 +110,13 @@ def main():
     print('evaluating using the model that has the best loss on the valid set')
 
     model.load_weights(fname_param)
-    score = model.evaluate(X_train, Y_train, batch_size=Y_train.shape[
+    score = model.evaluate(X_train_ALL, Y_train, batch_size=Y_train.shape[
                            0] // 48, verbose=0)
     print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
     score = model.evaluate(
-        X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
+        X_test_ALL, Y_test, batch_size=Y_test.shape[0], verbose=0)
     print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
@@ -126,7 +126,7 @@ def main():
         'MODEL', '{}.cont.best.h5'.format(hyperparams_name))
     model_checkpoint = ModelCheckpoint(
         fname_param, monitor='rmse', verbose=0, save_best_only=True, mode='min')
-    history = model.fit(X_train, Y_train, nb_epoch=nb_epoch_cont, verbose=1, batch_size=batch_size, callbacks=[
+    history = model.fit(X_train_ALL, Y_train, nb_epoch=nb_epoch_cont, verbose=1, batch_size=batch_size, callbacks=[
                         model_checkpoint], validation_data=(X_test, Y_test))
     pickle.dump((history.history), open(os.path.join(
         path_result, '{}.cont.history.pkl'.format(hyperparams_name)), 'wb'))
@@ -135,13 +135,13 @@ def main():
 
     print('=' * 10)
     print('evaluating using the final model')
-    score = model.evaluate(X_train, Y_train, batch_size=Y_train.shape[
+    score = model.evaluate(X_train_ALL, Y_train, batch_size=Y_train.shape[
                            0] // 48, verbose=0)
     print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
     score = model.evaluate(
-        X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
+        X_test_ALL, Y_test, batch_size=Y_test.shape[0], verbose=0)
     print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
