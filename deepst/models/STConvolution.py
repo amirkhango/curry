@@ -4,7 +4,8 @@ from keras.layers import (
     Activation,
     Dense,
     Reshape,
-    Add
+    Add,
+    Merge
 )
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
@@ -15,11 +16,12 @@ def binCNN(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 32)):
     n_flow =c_conf[1]
     map_width = c_conf[2]
     map_height = c_conf[3]
+    input_shape = (n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height)
 
-    print('input shape is:',n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height)
+    print('input shape is:', input_shape)
 
     model = Sequential()
-    model.add(Convolution2D(filters=64, kernel_size=(3,3), input_shape=(n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height), padding='same'))
+    model.add(Convolution2D(filters=64, kernel_size=(3,3), input_shape=input_shape, padding='same'))
     model.add(Activation('relu'))
 
     model.add(Convolution2D(filters=128, kernel_size=(3,3), padding='same'))
@@ -33,6 +35,45 @@ def binCNN(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 32)):
 
     return model
 
+def binCNN_CPTM(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 32), metadata_dim=8):
+    n_flow =c_conf[1]
+    map_width = c_conf[2]
+    map_height = c_conf[3]
+    input_shape = (n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height, metadata_dim)
+
+    print('main_inputs shape is:', input_shape)
+
+    model = Sequential()
+    model.add(Convolution2D(filters=64, kernel_size=(3,3), input_shape=(n_flow*(c_conf[0]+p_conf[0]+t_conf[0]), map_width, map_height), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=128, kernel_size=(3,3), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=64, kernel_size=(3,3), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution2D(filters=n_flow, kernel_size=(3,3), padding='same'))
+    model.add(Activation('tanh'))
+    model.summary()
+    
+    metadata_processor = Sequential()
+    # metadata_processor.add(Dense(output_dim=nb_flow * map_height * map_width, input_dim=metadata_dim))
+    metadata_processor.add(Dense(units=10, input_dim=metadata_dim))
+    metadata_processor.add(Activation('relu'))
+    metadata_processor.add(Dense(units=n_flow * map_height * map_width))
+    metadata_processor.add(Activation('relu'))
+    metadata_processor.add(Reshape((n_flow, map_width, map_height)))
+
+    #model_final=Sequential()
+    #model_final.add(Merge([model, metadata_processor], mode='sum'))
+    #model_final.add(Activation('tanh'))
+
+    model_final=Sequential()
+    model_final.add(Merge([model, metadata_processor], mode='sum'))
+    model_final.add(Activation('tanh'))
+
+    return model_final
 
 
 def seqCNN(n_flow=4, seq_len=3, map_height=32, map_width=32):

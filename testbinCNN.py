@@ -80,7 +80,9 @@ def main():
 	# data_numbers=800 will use only 800 series for trying on small data.
 	X_train_ALL, X_test_ALL, X_train, Y_train, X_test, Y_test, mmn, external_dim, timestamp_train, timestamp_test = BikeNYC.load_data(
 	    T=T, nb_flow=nb_flow, len_closeness=len_closeness, len_period=len_period, len_trend=len_trend, len_test=len_test,
-	    preprocess_name='preprocessing.pkl', meta_data=True, data_numbers=1500)
+	    preprocess_name='preprocessing.pkl', meta_data=False, data_numbers=None)
+
+	
 
 	print("\n days (test): ", [v[:8] for v in timestamp_test[0::T]])
 
