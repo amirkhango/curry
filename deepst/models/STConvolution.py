@@ -59,9 +59,9 @@ def binCNN_CPTM(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 
     
     metadata_processor = Sequential()
     # metadata_processor.add(Dense(output_dim=nb_flow * map_height * map_width, input_dim=metadata_dim))
-    metadata_processor.add(Dense(units=10, input_dim=metadata_dim))
-    metadata_processor.add(Activation('relu'))
-    metadata_processor.add(Dense(units=n_flow * map_height * map_width))
+    metadata_processor.add(Dense(units=n_flow * map_height * map_width, input_dim=metadata_dim))
+    #metadata_processor.add(Activation('relu'))
+    #metadata_processor.add(Dense(units=n_flow * map_height * map_width))
     metadata_processor.add(Activation('relu'))
     metadata_processor.add(Reshape((n_flow, map_width, map_height)))
 
