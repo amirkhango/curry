@@ -30,14 +30,14 @@ lr = 0.0002  # learning rate
 def build_model():
     seq = Sequential()
     
-    seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
+    seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
                        input_shape = (None, 2, map_height, map_width),
                        padding='same', return_sequences=True, data_format='channels_first'))
 
-    seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
+    seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
         padding='same', return_sequences=True, data_format='channels_first'))
 
-    seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
+    seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
         padding='same', return_sequences=False, data_format='channels_first'))
     
     seq.add(Conv2D(filters=2, kernel_size=(3, 3),
@@ -63,7 +63,7 @@ def main():
     # Train the network
     seq = build_model()
     seq.fit(X_train, Y_train, batch_size=128,
-            epochs=20, validation_split=0.1)
+            epochs=10, validation_split=0.1)
     os._exit()
     # Testing the network on one movie
     # feed it with the first 7 positions and then
