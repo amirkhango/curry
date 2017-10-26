@@ -32,7 +32,13 @@ def build_model():
     
     seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
                        input_shape = (None, 2, map_height, map_width),
-                       padding='same', return_sequences=False, data_format='channels_first'))
+                       padding='same', return_sequences=True, data_format='channels_first'))
+
+    seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
+        padding='same', return_sequences=True, data_format='channels_first'))
+
+    seq.add(ConvLSTM2D(filters=8, kernel_size=(3, 3),
+        padding='same', return_sequences=False, data_format='channels_first'))
     
     seq.add(Conv2D(filters=2, kernel_size=(3, 3),
                    activation='tanh',
@@ -47,7 +53,7 @@ def build_model():
 def main():
     # Load data
     print("loading data...")
-    X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps = BikeNYC.load_sequence(seq_length=3, T=24, 
+    X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps = BikeNYC.load_sequence(seq_length=5, T=24, 
                                         test_percent=0.1, data_numbers=None)   
     print('X_train shape is', X_train.shape)
     print('Y_train shape is', Y_train.shape)
@@ -56,8 +62,8 @@ def main():
         
     # Train the network
     seq = build_model()
-    seq.fit(X_train, Y_train, batch_size=3,
-            epochs=10, validation_split=0.1)
+    seq.fit(X_train, Y_train, batch_size=128,
+            epochs=20, validation_split=0.1)
     os._exit()
     # Testing the network on one movie
     # feed it with the first 7 positions and then
