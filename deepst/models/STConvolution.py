@@ -12,6 +12,25 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import ZeroPadding3D
 from keras.layers.convolutional import Convolution2D, Convolution3D
 
+def bin3DCNN(n_flow=4, seq_len=3, map_height=32, map_width=32):
+    model=Sequential()
+    # model.add(ZeroPadding3D(padding=(0, 1, 1), input_shape=(n_flow, seq_len, map_height, map_width)))
+    # model.add(Convolution3D(64, 2, 3, 3, border_mode='valid'))
+    model.add(Convolution3D(64, 2, kernel_size=(3,3), border_mode='same', input_shape=(n_flow, seq_len, map_height, map_width)))
+    model.add(Activation('relu'))
+
+    model.add(Convolution3D(128, 2, kernel_size=(3,3), border_mode='same'))
+    model.add(Activation('relu'))
+
+    model.add(Convolution3D(64, 2, kernel_size=(3,3), border_mode='same'))
+    model.add(Activation('relu'))
+
+    model.add(ZeroPadding3D(padding=(0, 1, 1)))
+    model.add(Convolution3D(n_flow, seq_len, kernel_size=(3,3), border_mode='valid'))
+    # model.add(Convolution3D(n_flow, seq_len-2, 3, 3, border_mode='same'))
+    model.add(Activation('tanh'))
+    return model
+
 def binCNN(c_conf=(3, 2, 32, 32), p_conf=(4, 2, 32, 32), t_conf=(4, 2, 32, 32)):
     n_flow =c_conf[1]
     map_width = c_conf[2]

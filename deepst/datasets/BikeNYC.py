@@ -17,6 +17,57 @@ np.random.seed(1337)  # for reproducibility
 # parameters
 DATAPATH = Config().DATAPATH
 
+def get_batch(dataseq, seq_length=10, batch_size=1):
+    
+    assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
+  
+    if len(dataseq)%seq_length == 0:
+        dataseq = dataseq[:-seq_length+1]
+    else:
+        dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
+
+    X_data = np.copy(dataseq[:-1])
+    Y_data = np.copy(dataseq[seq_length::seq_length])
+    print('X_data shape is', X_data.shape)
+    X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
+
+    print('X_data shape is', X_data.shape)
+    print('Y_data shape is', Y_data.shape)
+    
+
+
+    return X_data, Y_data
+
+
+
+def load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None):
+    # load data
+    dataseq, timestamps = load_stdata(os.path.join(DATAPATH, 'BikeNYC', 'NYC14_M16x8_T60_NewEnd.h5'),data_numbers=data_numbers)
+    # remove a certain day which does not have 24 (for TaxiBJ data is 48) timestamps
+    dataseq, timestamps = remove_incomplete_days(dataseq, timestamps, T)
+    assert (dataseq >= 0).all() , 'There are error data which are < 0'    
+    assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
+  
+    if len(dataseq)%seq_length == 0:
+        dataseq = dataseq[:-seq_length+1]
+    else:
+        dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
+
+    X_data = np.copy(dataseq[:-1])
+    Y_data = np.copy(dataseq[seq_length::seq_length])
+    #Y_data = np.expand_dims(Y_data, axis=1)
+    X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
+  
+    len_test = int(test_percent*len(X_data))
+
+    X_train = X_data[:-len_test]
+    Y_train = Y_data[:-len_test]
+    X_test = X_data[-len_test:]
+    Y_test =  Y_data[-len_test:]
+
+    return X_train, Y_train, X_test, Y_test
+
+
 
 def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=None, len_test=None, 
     preprocess_name='preprocessing.pkl', meta_data=True, data_numbers=None):
@@ -45,10 +96,11 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
     data_all_mmn = []
     print('length of data_all is',len(data_all))
     for d in data_all:
+        print('d len is',d.shape)
         data_all_mmn.append(mmn.transform(d))
 
     fpkl = open('preprocessing.pkl', 'wb')
-    print('[mmn] lenght is', len([mmn]))
+    print('[mmn] length is', len([mmn]))
     for obj in [mmn]:
         pickle.dump(obj, fpkl)
     fpkl.close()
@@ -122,3 +174,6 @@ def load_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len_trend=No
         print(_X.shape, )
     print()
     return X_train_ALL, X_test_ALL, X_train, Y_train, X_test, Y_test, mmn, metadata_dim, timestamp_train, timestamp_test
+
+if __name__ == '__main__':
+    load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None)
