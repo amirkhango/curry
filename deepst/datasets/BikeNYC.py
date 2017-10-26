@@ -17,26 +17,26 @@ np.random.seed(1337)  # for reproducibility
 # parameters
 DATAPATH = Config().DATAPATH
 
-def get_batch(dataseq, seq_length=10, batch_size=1):
+# def get_batch(dataseq, seq_length=10, batch_size=1):
     
-    assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
+#     assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
   
-    if len(dataseq)%seq_length == 0:
-        dataseq = dataseq[:-seq_length+1]
-    else:
-        dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
+#     if len(dataseq)%seq_length == 0:
+#         dataseq = dataseq[:-seq_length+1]
+#     else:
+#         dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
 
-    X_data = np.copy(dataseq[:-1])
-    Y_data = np.copy(dataseq[seq_length::seq_length])
-    print('X_data shape is', X_data.shape)
-    X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
+#     X_data = np.copy(dataseq[:-1])
+#     Y_data = np.copy(dataseq[seq_length::seq_length])
+#     print('X_data shape is', X_data.shape)
+#     X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
 
-    print('X_data shape is', X_data.shape)
-    print('Y_data shape is', Y_data.shape)
+#     print('X_data shape is', X_data.shape)
+#     print('Y_data shape is', Y_data.shape)
     
 
 
-    return X_data, Y_data
+#     return X_data, Y_data
 
 
 
@@ -45,19 +45,39 @@ def load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None):
     dataseq, timestamps = load_stdata(os.path.join(DATAPATH, 'BikeNYC', 'NYC14_M16x8_T60_NewEnd.h5'),data_numbers=data_numbers)
     # remove a certain day which does not have 24 (for TaxiBJ data is 48) timestamps
     dataseq, timestamps = remove_incomplete_days(dataseq, timestamps, T)
+    print('The length of dataseq is:', len(dataseq))
+    
     assert (dataseq >= 0).all() , 'There are error data which are < 0'    
     assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
   
-    if len(dataseq)%seq_length == 0:
-        dataseq = dataseq[:-seq_length+1]
-    else:
-        dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
-
-    X_data = np.copy(dataseq[:-1])
-    Y_data = np.copy(dataseq[seq_length::seq_length])
-    #Y_data = np.expand_dims(Y_data, axis=1)
-    X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
+    # if len(dataseq)%seq_length == 0:
+    #     dataseq = dataseq[:-seq_length+1]
+    # else:
+    #     dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
   
+    X_data = np.copy(dataseq[:-1])
+    X_timestamps = np.copy(timestamps[:-1])
+    Y_data = np.copy(dataseq[seq_length::1])
+    Y_timestamps = np.copy(timestamps[seq_length::1])
+
+    X_list=[]
+    X_timestamps_list=[]
+
+    for i in range( len(X_data)-(seq_length-1) ):
+        X_list.append(X_data[i:i+seq_length])
+        X_timestamps_list.append(X_timestamps[i:i+seq_length])
+
+    X_data = np.array(X_list)
+    X_timestamps = np.array(X_timestamps_list)
+    print('X_data shape is', X_data.shape)
+    print('Y_data shape is', Y_data.shape)
+    
+
+    #Y_data = np.expand_dims(Y_data, axis=1)
+
+    #X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
+  
+
     len_test = int(test_percent*len(X_data))
 
     X_train = X_data[:-len_test]
@@ -65,7 +85,7 @@ def load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None):
     X_test = X_data[-len_test:]
     Y_test =  Y_data[-len_test:]
 
-    return X_train, Y_train, X_test, Y_test
+    return X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps
 
 
 

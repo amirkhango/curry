@@ -47,12 +47,13 @@ def build_model():
 def main():
     # Load data
     print("loading data...")
-    X_train, Y_train, X_test, Y_test= BikeNYC.load_sequence(seq_length=3, T=24, 
+    X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps = BikeNYC.load_sequence(seq_length=3, T=24, 
                                         test_percent=0.1, data_numbers=None)   
     print('X_train shape is', X_train.shape)
     print('Y_train shape is', Y_train.shape)
     print('X_test shape is', X_test.shape)
-    print('Y_test shape is', Y_test.shape)   
+    print('Y_test shape is', Y_test.shape)
+        
     # Train the network
     seq = build_model()
     seq.fit(X_train, Y_train, batch_size=3,
