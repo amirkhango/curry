@@ -49,17 +49,25 @@ def load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None):
     
     assert (dataseq >= 0).all() , 'There are error data which are < 0'    
     assert len(dataseq) > seq_length, 'Error! Length of data sequences is <= seq_length'
-  
-    # if len(dataseq)%seq_length == 0:
-    #     dataseq = dataseq[:-seq_length+1]
-    # else:
-    #     dataseq = dataseq[:int(len(dataseq)//seq_length*seq_length)+1]
-  
+
     X_data = np.copy(dataseq[:-1])
     X_timestamps = np.copy(timestamps[:-1])
-    Y_data = np.copy(dataseq[seq_length::1])
-    Y_timestamps = np.copy(timestamps[seq_length::1])
+    Y_data = np.copy(dataseq[seq_length:])
+    Y_timestamps = np.copy(timestamps[seq_length:])
 
+    assert len(X_data)==(len(Y_data)-1+seq_length), 'Error! Length(input) != Length(label)+seq_length'
+
+    len_test = int(test_percent*len(X_data))
+
+    #Normalization
+    #print(X_data[:-len_test].shape, Y_data[:-len_test][-1].shape)
+    train_data=np.append(X_data[:-len_test],[Y_data[:-len_test][-1]], axis=0)
+    mmn=MinMaxNormalization()
+    mmn.fit(train_data)
+    X_data=mmn.transform(X_data)
+    Y_data=mmn.transform(Y_data)
+
+    #Prepare input sequence and label for training and testing
     X_list=[]
     X_timestamps_list=[]
 
@@ -74,18 +82,17 @@ def load_sequence(seq_length=5, T=24, test_percent=0.1, data_numbers=None):
     
 
     #Y_data = np.expand_dims(Y_data, axis=1)
-
     #X_data = np.array(np.split(X_data, len(X_data)//seq_length ))
-  
-
-    len_test = int(test_percent*len(X_data))
 
     X_train = X_data[:-len_test]
     Y_train = Y_data[:-len_test]
     X_test = X_data[-len_test:]
     Y_test =  Y_data[-len_test:]
+   
+    #train_data = np.concatenate(X_train,Y_train)
+    #print('train_data shape:..', train_data.shape)
 
-    return X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps
+    return X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps, mmn
 
 
 
