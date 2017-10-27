@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ This script demonstrates the use of a convolutional LSTM network.
 This network is used to predict the next frame of an artificially
 generated movie which contains moving squares.
@@ -15,6 +17,7 @@ import os
 import deepst.metrics as metrics
 from deepst.datasets import BikeNYC
 import math
+import pickle
 
 from keras import backend as K
 K.clear_session()
@@ -30,8 +33,14 @@ days_test = 10
 T = 24
 len_test = T * days_test
 lr = 0.0002  # learning rate
-EPOCHS = 300
+nb_epoch = 10
+nb_cont_epoch = 5
 batch_size = 32
+seq_length=5
+PATH_RESULT='Test_RET'
+PATH_MODEL='Test_MODEL'
+
+test_data_nums =100
 
 def build_model():
     seq = Sequential()
@@ -62,27 +71,43 @@ def build_model():
 def main():
     # Load data
     print("loading data...")
-    X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps, mmn = BikeNYC.load_sequence(seq_length=5, T=24, 
-                                        test_percent=0.1, data_numbers=None)   
+    X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps, mmn = BikeNYC.load_sequence(seq_length=seq_length, T=24, 
+                                        test_percent=0.1, data_numbers=test_data_nums)   
     print('X_train shape is', X_train.shape)
     print('Y_train shape is', Y_train.shape)
     print('X_test shape is', X_test.shape)
     print('Y_test shape is', Y_test.shape)
     
     # Train the network, to use reset_states(), 
-    # we must make epochs=1 and train for EPOCHS in a Loop.
+    # we must make epochs=1 and train for nb_epoch in a Loop.
     seq = build_model()
 
-    # for e in range(EPOCHS):
+    hyperparams_name = 'b{}.Conv2DLSTM_layers{}.SeqLen{}.Conv2D_LSTM_BikeNYC.lr{}'.format(
+        batch_size, 2, seq_length, lr)
+    fname_param = os.path.join(PATH_MODEL, '{}.best.h5'.format(hyperparams_name))
+    early_stopping = EarlyStopping(monitor='val_rmse', patience=20, mode='min')
+    model_checkpoint = ModelCheckpoint(
+        fname_param, monitor='val_rmse', verbose=0, save_best_only=True, mode='min')
+    # for e in range(nb_epoch):
     #     seq.fit(X_train, Y_train, batch_size=batch_size, epochs=1, validation_split=0.1)
     #     seq.reset_states()
 
-    seq.fit(X_train, Y_train, batch_size=batch_size, epochs=EPOCHS, validation_split=0.1)
+    history = seq.fit(X_train, Y_train, 
+        batch_size=batch_size, 
+        epochs=nb_epoch, 
+        validation_split=0.1,
+        callbacks=[early_stopping, model_checkpoint],
+        verbose=1)
+
+    seq.save_weights(os.path.join(
+        PATH_MODEL, '{}.h5'.format(hyperparams_name)), overwrite=True)
+    pickle.dump((history.history), open(os.path.join(
+        PATH_RESULT, '{}.history.pkl'.format(hyperparams_name)), 'wb'))
 
     print('=' * 10)
     print('evaluating using the model that has the best loss on the valid set')
 
-    #seq.load_weights(fname_param)
+    seq.load_weights(fname_param)
     score = seq.evaluate(X_train, Y_train, batch_size=batch_size, verbose=0)
     print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
@@ -91,7 +116,35 @@ def main():
     print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
-    os._exit()
+    print('=' * 10)
+    print("training model (cont)...")
+    fname_param = os.path.join(
+        PATH_MODEL, '{}.cont.best.h5'.format(hyperparams_name))
+    model_checkpoint = ModelCheckpoint(
+        fname_param, monitor='rmse', verbose=0, save_best_only=True, mode='min')
+
+    history = seq.fit(X_train, Y_train, 
+        nb_epoch=nb_cont_epoch, 
+        verbose=1, 
+        batch_size=batch_size, 
+        callbacks=[model_checkpoint], 
+        validation_data=(X_test, Y_test))
+
+    pickle.dump((history.history), open(os.path.join(
+        PATH_RESULT, '{}.cont.history.pkl'.format(hyperparams_name)), 'wb'))
+    seq.save_weights(os.path.join(
+        PATH_MODEL, '{}_cont.h5'.format(hyperparams_name)), overwrite=True)
+
+    print('=' * 10)
+    print('evaluating using the final model')
+    score = seq.evaluate(X_train, Y_train, batch_size=batch_size, verbose=0)
+    print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
+          (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
+
+    score = seq.evaluate(
+        X_test, Y_test, batch_size=batch_size, verbose=0)
+    print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
+          (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
 if __name__ == '__main__':
     main()
