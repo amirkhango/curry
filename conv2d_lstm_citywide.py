@@ -32,14 +32,14 @@ m_factor = math.sqrt(1. * map_height * map_width / nb_area)
 days_test = 10
 T = 24
 len_test = T * days_test
-lr = 0.0002  # learning rate
-nb_epoch = 150
-nb_cont_epoch = 20
-batch_size = 64
-seq_length=5
+lr = 0.001  # learning rate
+nb_epoch =40
+nb_cont_epoch = 10
+batch_size =32
+seq_length=12
 PATH_RESULT='Test_RET'
 PATH_MODEL='Test_MODEL'
-
+num_layers=3
 test_data_nums =None
 
 def build_model():
@@ -54,9 +54,9 @@ def build_model():
          padding='same', activation='relu', return_sequences=True, data_format='channels_first'))
     seq.add(BatchNormalization())
 
-    # seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
-    #     padding='same', activation='tanh', return_sequences=False, data_format='channels_first'))
-    # seq.add(BatchNormalization())
+    seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
+         padding='same', activation='tanh', return_sequences=False, data_format='channels_first'))
+    seq.add(BatchNormalization())
 
     seq.add(Conv2D(filters=2, kernel_size=(3, 3),
                    activation='tanh',
@@ -72,7 +72,7 @@ def main():
     # Load data
     print("loading data...")
     X_train, Y_train, X_test, Y_test, X_timestamps, Y_timestamps, mmn = BikeNYC.load_sequence(seq_length=seq_length, T=24, 
-                                        test_percent=0.1, data_numbers=test_data_nums)   
+                                        test_percent=0.055, data_numbers=test_data_nums)   
     print('X_train shape is', X_train.shape)
     print('Y_train shape is', Y_train.shape)
     print('X_test shape is', X_test.shape)
@@ -83,7 +83,7 @@ def main():
     seq = build_model()
 
     hyperparams_name = 'b{}.Conv2DLSTM_layers{}.SeqLen{}.Conv2D_LSTM_BikeNYC.lr{}'.format(
-        batch_size, 2, seq_length, lr)
+        batch_size, num_layers, seq_length, lr)
     fname_param = os.path.join(PATH_MODEL, '{}.best.h5'.format(hyperparams_name))
     early_stopping = EarlyStopping(monitor='val_rmse', patience=10, mode='min')
     model_checkpoint = ModelCheckpoint(
