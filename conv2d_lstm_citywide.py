@@ -33,25 +33,25 @@ days_test = 10
 T = 24
 len_test = T * days_test
 lr = 0.0002  # learning rate
-nb_epoch = 10
-nb_cont_epoch = 5
-batch_size = 32
+nb_epoch = 150
+nb_cont_epoch = 20
+batch_size = 64
 seq_length=5
 PATH_RESULT='Test_RET'
 PATH_MODEL='Test_MODEL'
 
-test_data_nums =100
+test_data_nums =None
 
 def build_model():
     seq = Sequential()
     
     seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
                        input_shape = (None, 2, map_height, map_width),
-                       padding='same', activation='tanh', return_sequences=True, data_format='channels_first'))
+                       padding='same', activation='relu', return_sequences=True, data_format='channels_first'))
     seq.add(BatchNormalization())
 
     seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
-         padding='same', activation='tanh', return_sequences=False, data_format='channels_first'))
+         padding='same', activation='relu', return_sequences=True, data_format='channels_first'))
     seq.add(BatchNormalization())
 
     # seq.add(ConvLSTM2D(filters=32, kernel_size=(3, 3),
@@ -85,7 +85,7 @@ def main():
     hyperparams_name = 'b{}.Conv2DLSTM_layers{}.SeqLen{}.Conv2D_LSTM_BikeNYC.lr{}'.format(
         batch_size, 2, seq_length, lr)
     fname_param = os.path.join(PATH_MODEL, '{}.best.h5'.format(hyperparams_name))
-    early_stopping = EarlyStopping(monitor='val_rmse', patience=20, mode='min')
+    early_stopping = EarlyStopping(monitor='val_rmse', patience=10, mode='min')
     model_checkpoint = ModelCheckpoint(
         fname_param, monitor='val_rmse', verbose=0, save_best_only=True, mode='min')
     # for e in range(nb_epoch):
