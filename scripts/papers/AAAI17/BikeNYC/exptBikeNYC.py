@@ -24,7 +24,6 @@ nb_epoch = 500  # number of epoch at training stage
 nb_epoch_cont = 100  # number of epoch at training (cont) stage
 batch_size = 32  # batch size
 T = 24  # number of time intervals in one day
-
 lr = 0.0002  # learning rate
 len_closeness = 3  # length of closeness dependent sequence
 len_period = 0  # length of peroid dependent sequence
@@ -52,7 +51,7 @@ if os.path.isdir(path_model) is False:
     os.mkdir(path_model)
 
 
-def build_model(external_dim):
+def build_model(external_dim=None):
     c_conf = (len_closeness, nb_flow, map_height,
               map_width) if len_closeness > 0 else None
     p_conf = (len_period, nb_flow, map_height,

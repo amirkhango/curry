@@ -8,6 +8,9 @@
 bak/
 backup/
 *.txt
+Test_MODEL
+Test_RET
+data
 
 
 # Byte-compiled / optimized / DLL files

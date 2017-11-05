@@ -108,11 +108,12 @@ def main():
     print('evaluating using the model that has the best loss on the valid set')
 
     seq.load_weights(fname_param)
-    score = seq.evaluate(X_train, Y_train, batch_size=batch_size, verbose=0)
+    score = seq.evaluate(X_train, Y_train, batch_size=Y_train.shape[
+                           0] // 48, verbose=0)
     print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
-    score = seq.evaluate(X_test, Y_test, batch_size=batch_size, verbose=0)
+    score = seq.evaluate(X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
     print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
@@ -137,12 +138,13 @@ def main():
 
     print('=' * 10)
     print('evaluating using the final model')
-    score = seq.evaluate(X_train, Y_train, batch_size=batch_size, verbose=0)
+    score = seq.evaluate(X_train, Y_train, batch_size=Y_train.shape[
+                           0] // 48, verbose=0)
     print('Train score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
     score = seq.evaluate(
-        X_test, Y_test, batch_size=batch_size, verbose=0)
+        X_test, Y_test, batch_size=Y_test.shape[0], verbose=0)
     print('Test score: %.6f rmse (norm): %.6f rmse (real): %.6f' %
           (score[0], score[1], score[1] * (mmn._max - mmn._min) / 2. * m_factor))
 
