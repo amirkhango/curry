@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[4]:
+# In[1]:
 
 
 # -*- coding: utf-8 -*-
@@ -26,9 +26,9 @@ np.random.seed(1337)  # for reproducibility
 # data path, you may set your own data path with the global envirmental
 # variable DATAPATH
 DATAPATH = Config().DATAPATH
-nb_epoch = 50  # number of epoch at training stage
+nb_epoch = 40  # number of epoch at training stage
 nb_epoch_cont = 10  # number of epoch at training (cont) stage
-batch_size = 32  # batch size
+batch_size = 1  # batch size
 T = 24  # number of time intervals in one day
 
 lr = 0.0002  # learning rate
@@ -59,7 +59,7 @@ if os.path.isdir(path_model) is False:
     os.mkdir(path_model)
 
 
-# In[5]:
+# In[2]:
 
 
 def build_model(external_dim=None):
@@ -80,7 +80,7 @@ def build_model(external_dim=None):
     return model
 
 
-# In[6]:
+# In[ ]:
 
 
 def main():
@@ -144,7 +144,7 @@ def main():
     model_checkpoint = ModelCheckpoint(
         fname_param, monitor='rmse', verbose=0, save_best_only=True, mode='min')
     history = model.fit(X_train, Y_train, nb_epoch=nb_epoch_cont, verbose=1, batch_size=batch_size, callbacks=[
-                        model_checkpoint], validation_data=(X_test_ALL, Y_test))
+                        model_checkpoint], validation_data=(X_test, Y_test))
     pickle.dump((history.history), open(os.path.join(
         path_result, '{}.cont.history.pkl'.format(hyperparams_name)), 'wb'))
     model.save_weights(os.path.join(

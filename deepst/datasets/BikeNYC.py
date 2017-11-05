@@ -165,7 +165,7 @@ def load_threeway_data(T=24, nb_flow=2, len_closeness=None, len_period=None, len
             
     for l, X_ in zip([len_closeness, len_period, len_trend], [XC_test, XP_test, XT_test]):
         if l > 0:
-            X_test.append(X_)
+            X_test.append(split_to_seq(X_, length=l, nb_flow=2))
     print('train shape:', XC_train.shape, Y_train.shape, 'test shape: ', XC_test.shape, Y_test.shape)
     # load meta feature
     if meta_data:
